@@ -28,7 +28,6 @@ class UserRequest extends FormRequest
             'password'=>'required|min:5',
             'firstName'=>'required',
             'lastName'=>'required',
-            'isAdmin'=>'required',
             'email'=>'required',
         ];
     }

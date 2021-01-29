@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,25 +32,27 @@ Route::prefix('product-categories')->group(function (){
 });
 
 
-//products
+//protected products
 Route::prefix('products')->middleware(['auth:api', 'can:accessAdmin'])->group(function(){
     Route::get('/',[ProductController::class, 'getAllProducts'] );
     Route::post('/{categoryName}', [ProductController::class, 'addProduct']);
+    Route::put('/{id}', [ProductController::class, 'editProduct']);
+    Route::delete('/{id}', [ProductController::class, 'deleteProduct']);
 });
 
 //open routes
 Route::prefix('products')->group(function(){
     Route::get('/',[ProductController::class, 'getAllProducts'] );
+    Route::get('/{id}',[ProductController::class, 'getProduct'] );
 
 });
 //user routes
 Route::prefix('users')->group(function(){
-    Route::post('/auth', [\App\Http\Controllers\UserController::class, 'login']);
-    Route::post('/', [\App\Http\Controllers\UserController::class, 'registerUser']);
-    Route::get('/', [\App\Http\Controllers\UserController::class, 'getAllUsers']);
+    Route::post('/auth', [UserController::class, 'login']);
+    Route::post('/', [UserController::class, 'registerUser']);
+    Route::get('/', [UserController::class, 'getAllUsers']);
 });
 
-//Route::prefix('products')->middleware(['auth:api', 'can:accessAdmin'])->group(function () {
-//    Route::get('/',[ProductController::class, 'getAllProducts'] );
-//    Route::post('/{categoryName}', [ProductController::class, 'addProduct']);
-//    });
+//Rigister admin
+Route::post('/admin/register', [UserController::class, 'registerAdmin'])->middleware(['auth:api', 'can:accessAdmin']);
+

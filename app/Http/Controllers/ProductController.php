@@ -14,7 +14,7 @@ class ProductController extends Controller
     //
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['getAllProducts']);
+        $this->middleware('auth:api')->except(['getAllProducts', 'getProduct']);
         $this->user = $this->guard()->user();
     }
 
@@ -25,6 +25,22 @@ class ProductController extends Controller
         return response()->json([
             "products"=>$products
         ]);
+    }
+
+    public function getProduct($id){
+        $product = Product::find($id);
+
+        if(is_null($product)){
+            return response()->json([
+                "status"=>"fail",
+                "success"=>0,
+                "message"=>"No product found with id " . $id
+            ], 404);
+        }
+        return response()->json([
+            "data"=>$product
+        ]);
+
     }
     public function addProduct($categoryName, Request $product): \Illuminate\Http\JsonResponse
     {
@@ -79,7 +95,63 @@ class ProductController extends Controller
 
     }
 
-    public function editProduct($id){
+    public function editProduct(Request $product, $id){
+
+        $oldProduct = Product::find($id);
+
+        if(is_null($oldProduct)){
+            return response()->json([
+                "status"=>"fail",
+                "success"=>0,
+                "message"=>"No product found with id " . $id
+            ], 404);
+        }
+
+        $product->validate([
+            'name'=>'required',
+            'quantity'=>'required',
+            'threshold'=>'required',
+            'available'=>'required',
+            'price_per_unit'=>'required',
+            'description'=>'required'
+        ]);
+
+        $oldProduct->name = $product->name;
+        $oldProduct->description = $product->description;
+        $oldProduct->quantity = $product->quantity;
+        $oldProduct->available = $product->available;
+        $oldProduct->price_per_unit = $product->price_per_unit;
+        $oldProduct->threshold = $product->threshold;
+
+        $oldProduct->save();
+
+        return response()->json([
+            "status" => "ok",
+            "message"=>"Product edited  successfully"
+        ], 200);
+
+
+    }
+
+    public function deleteProduct($id){
+        $product = Product::find($id);
+
+        if(is_null($product)){
+            return response()->json([
+                "status"=>"fail",
+                "success"=>0,
+                "message"=>"No product found with id " . $id
+            ], 404);
+        }
+
+        $product->delete();
+
+        return response()->json([
+            "status" => "ok",
+            "message"=>"Product deleted  successfully"
+        ], 200);
+
+
 
     }
 

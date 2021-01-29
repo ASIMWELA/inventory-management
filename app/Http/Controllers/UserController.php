@@ -29,13 +29,29 @@ class UserController extends Controller
         $newUser->userName=$user->userName;
         $newUser->email=$user->email;
         $newUser->password= bcrypt($user->password);
-        $newUser->isAdmin=$user->isAdmin;
-
         $newUser->save();
 
         return response()->json([
             'status'=>'ok',
             'message'=>'user saved',
+        ], 201);
+    }
+
+    public function registerAdmin(UserRequest $user){
+
+        $newUser = new User;
+
+        $newUser->firstName=$user->firstName;
+        $newUser->lastName=$user->lastName;
+        $newUser->userName=$user->userName;
+        $newUser->email=$user->email;
+        $newUser->password= bcrypt($user->password);
+        $newUser->isAdmin=true;
+        $newUser->save();
+
+        return response()->json([
+            'status'=>'ok',
+            'message'=>'Admin saved',
         ], 201);
     }
 

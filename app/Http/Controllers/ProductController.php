@@ -6,11 +6,17 @@ use App\Models\product;
 use App\Models\ProductCategory;
 use http\Env\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use function PHPUnit\Framework\isEmpty;
 
 class ProductController extends Controller
 {
     //
+    public function __construct()
+    {
+        $this->middleware('auth:api')->except(['getAllProducts']);
+        $this->user = $this->guard()->user();
+    }
 
     public function getAllProducts(){
 
@@ -75,5 +81,10 @@ class ProductController extends Controller
 
     public function editProduct($id){
 
+    }
+
+    private function guard()
+    {
+        return Auth::guard();
     }
 }

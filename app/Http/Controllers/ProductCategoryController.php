@@ -14,7 +14,7 @@ class ProductCategoryController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api')->except(['getAllProductCategories', 'getCategory']);
         $this->user = $this->guard()->user();
     }
 

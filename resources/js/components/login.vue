@@ -64,9 +64,13 @@ export default{
                },
                data:JSON.stringify(data)
            }).then(res=>{
-               console.log(res.data)
+               if(res.data.status === 'ok'){
+                   console.log(res.data)
+                   this.isSubmitting=false
+               }
 
-               this.isSubmitting=false
+
+
            }).catch(err=>{
                console.log(err)
                this.isSubmitting = false

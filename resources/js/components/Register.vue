@@ -51,7 +51,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+import Axios from 'axios';
+
 import {BASE_API_URL} from '../constants/appConstants'
 
 export default {
@@ -76,7 +77,7 @@ export default {
           const userData = {...this.userState}
           this.isSubmitting = true
 
-          await axios({
+          await Axios({
               method:'post',
               url:BASE_API_URL+'/users',
               headers:{

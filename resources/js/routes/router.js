@@ -8,6 +8,7 @@ Vue.use(VueRouter)
 import Login from '../components/login'
 import Home from '../components/Home'
 import Register from '../components/Register'
+import Admin from '../components/Admin'
 
 const routes=[
     {
@@ -26,6 +27,11 @@ const routes=[
         path:'/register',
         name:'register',
         component:Register
+    },
+    {
+        path:'/admin',
+        name:'admin',
+        component:Admin
     }
 ]
 

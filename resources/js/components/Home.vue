@@ -7,15 +7,15 @@
                     :ghost="false"
                     title="Title"
                     sub-title="This is a subtitle"
-                    @back="() => $router.go(-1)"
+
                 >
                     <template slot="extra">
-                        <a-button key="3">
+                        <a-button key="3" type="link">
                            <router-link :to="{name:'login'}">
                                Login
                            </router-link>
                         </a-button>
-                        <a-button key="2">
+                        <a-button key="2" type="link">
                             <router-link :to="{name:'register'}">
                                 Register
                             </router-link>
@@ -41,16 +41,37 @@
                     </a-descriptions>
                 </a-page-header>
             </div>
-            <p>Card content</p>
-            <p>Card content</p>
-            <p>Card content</p>
+            <p>
+                <a-row>
+                        <a-col :span="10" class="inventory-desc">
+                           <span>
+                               <strong class="homepage-title">Inventory Management</strong>
+                               <br/>
+                               <span class="homepage-text">
+
+                                   Lorem ipsum dolor sit amet,
+                                        consectetur adipiscing elit. In eget odio consectetur,
+                                        vestibulum nisi eget, euismod mi. Nunc sit amet vulputate justo.
+                                        Quisque ut pellentesque nibh, sit amet tincidunt ante. Ut eleifend justo eros,
+                                        et faucibus quam pellentesque ut. Nunc dignissim maximus justo in pellentesque.
+                                        Nunc bibendum metus sollicitudin nunc tristique feugiat.
+                                        Phasellus feugiat ut mi ac sagittis.
+                               </span>
+                           </span>
+                        </a-col>
+                       <a-col :span="14">
+                            <img src="images/homepage.jpg" alt="" style="width: 70%; height: 4%; margin-left: 2%"/>
+                       </a-col>
+               </a-row>
+           </p>
+
         </a-card>
     </div>
 </div>
 
 
 </template>
-<style>
+<style scoped>
 
 .home-container{
     margin: 0;
@@ -59,5 +80,15 @@
 }
 tr:last-child td {
     padding-bottom: 0;
+}
+.inventory-desc{
+    margin-top: 9%;
+
+}
+.homepage-title{
+margin-left: 5rem;
+}
+.homepage-text{
+
 }
 </style>

@@ -9,6 +9,7 @@ import Login from '../components/login'
 import Home from '../components/Home'
 import Register from '../components/Register'
 import Admin from '../components/Admin'
+import User from '../components/User'
 
 const routes=[
     {
@@ -31,7 +32,30 @@ const routes=[
     {
         path:'/admin',
         name:'admin',
-        component:Admin
+        component:Admin,
+        beforeEnter:(from , to, next)=>{
+           const admin =  JSON.parse(localStorage.getItem('admin'));
+
+           if(admin){
+               next()
+           }else{
+                next('/login')
+           }
+        }
+    },
+    {
+        path:'/user',
+        name:'user',
+        component:User,
+        beforeEnter:(from , to , next)=>{
+            const user = JSON.parse(localStorage.getItem('user'))
+
+            if(user){
+                next()
+            }else {
+                next('/login')
+            }
+        }
     }
 ]
 

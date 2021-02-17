@@ -65,6 +65,18 @@ export default{
                data:JSON.stringify(data)
            }).then(res=>{
                if(res.data.status === 'ok'){
+                   if(res.data.userData.isAdmin){
+
+                       localStorage.setItem('admin', JSON.stringify(res.data))
+                       this.$router.push('/admin')
+
+                   }
+
+                   if(!res.data.userData.isAdmin){
+                       localStorage.setItem('user', JSON.stringify(res.data))
+                       this.$router.push('/user')
+                   }
+
                    console.log(res.data)
                    this.isSubmitting=false
                }

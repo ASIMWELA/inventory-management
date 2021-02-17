@@ -55,6 +55,8 @@ import Axios from 'axios';
 
 import {BASE_API_URL} from '../constants/appConstants'
 
+import { required, minLength, maxLength, email } from 'vuelidate/lib/validators'
+
 export default {
 
     data() {
@@ -71,6 +73,27 @@ export default {
             isSubmitting
           }
 
+    },
+    validations: {
+        firstName: {
+            required
+        },
+
+        lastName: {
+            required
+        },
+
+        userName: {
+            required
+        },
+
+        password: {
+            required
+        },
+        email:{
+            email,
+            required
+        }
     },
     methods:{
       async signUpUser(){

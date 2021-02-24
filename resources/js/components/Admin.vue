@@ -48,7 +48,7 @@
 
             </a-page-header>
             <a-layout-content style="margin: 0 16px">
-                <a-breadcrumb style="margin: 16px 0" :routes="routes">
+                <a-breadcrumb style="margin: 16px 0" >
                     <a-breadcrumb-item>Admin</a-breadcrumb-item>
                     <a-breadcrumb-item>{{optionSelected}}</a-breadcrumb-item>
 

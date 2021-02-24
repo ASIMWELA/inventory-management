@@ -1,48 +1,43 @@
 <template>
-    <a-table :columns="columns" :data-source="data">
+    <a-table :columns="columns" :data-source="data" rowKey="Id" >
         <a slot="name" slot-scope="text">{{ text }}</a>
         <span slot="customTitle"><a-icon type="smile-o" /> Name</span>
-        <span slot="tags" slot-scope="tags">
-      <a-tag
-          v-for="tag in tags"
-          :key="tag"
-          :color="tag === 'loser' ? 'volcano' : tag.length > 5 ? 'geekblue' : 'green'"
-      >
-        {{ tag.toUpperCase() }}
-      </a-tag>
-    </span>
+
         <span slot="action" slot-scope="text, record">
-      <a>Invite 一 {{ record.name }}</a>
       <a-divider type="vertical" />
-      <a>Delete</a>
+      <a @click="deleteUser(record.userName)">Delete</a>
       <a-divider type="vertical" />
-      <a class="ant-dropdown-link"> More actions <a-icon type="down" /> </a>
+     <a>Edit</a>
     </span>
     </a-table>
 </template>
 
 <script>
+
+    import Axios from 'axios';
+    import {BASE_API_URL} from '../constants/appConstants'
 const columns = [
     {
-        dataIndex: 'name',
-        key: 'name',
-        slots: { title: 'customTitle' },
-        scopedSlots: { customRender: 'name' },
+        title: 'First Name',
+        dataIndex: 'firstName',
+        key: 'fname',
     },
     {
-        title: 'Age',
-        dataIndex: 'age',
-        key: 'age',
+        title: 'Last Name',
+        dataIndex: 'lastName',
+        key: 'lname',
     },
     {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
+        title: 'User Name',
+        key: 'uname',
+        dataIndex: 'userName',
+        scopedSlots: { customRender: 'tags' },
     },
+
     {
-        title: 'Tags',
-        key: 'tags',
-        dataIndex: 'tags',
+        title: 'Email',
+        key: 'email',
+        dataIndex: 'email',
         scopedSlots: { customRender: 'tags' },
     },
     {
@@ -51,31 +46,7 @@ const columns = [
         scopedSlots: { customRender: 'action' },
     },
 ];
-
-const data = [
-    {
-        key: '1',
-        name: 'John Brown',
-        age: 32,
-        address: 'New York No. 1 Lake Park',
-        tags: ['nice', 'developer'],
-    },
-    {
-        key: '2',
-        name: 'Jim Green',
-        age: 42,
-        address: 'London No. 1 Lake Park',
-        tags: ['loser'],
-    },
-    {
-        key: '3',
-        name: 'Joe Black',
-        age: 32,
-        address: 'Sidney No. 1 Lake Park',
-        tags: ['cool', 'teacher'],
-    },
-];
-
+    let data = []
 export default{
         name:'Userslist',
 
@@ -84,6 +55,24 @@ export default{
                columns,
                data
            }
-       }
+       },
+methods:{
+  async deleteUser(userName){
+      console.log(userName)
+  }
+},
+   async mounted() {
+
+            let userData = [];
+
+            await Axios.get(BASE_API_URL+'/users').then(res=>{
+
+                res.data.users.map((user, index)=>{
+                     user.Id = index
+                     userData.push(user)
+            })
+          });
+          this.data = userData
     }
+}
 </script>

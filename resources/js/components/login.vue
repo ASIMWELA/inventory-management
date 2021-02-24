@@ -19,8 +19,9 @@
 
                <button type="submit" class="btn btn-dark btn-lg btn-block" v-else>Sign In</button>
 
+
                <p class="forgot-password text-right mt-2 mb-4">
-                   <router-link to="/forgot-password">Forgot password ?</router-link>
+                   <router-link to="/">Home</router-link>
                </p>
 
 
@@ -69,7 +70,7 @@ export default{
 
                        localStorage.setItem('admin', JSON.stringify(res.data))
                        this.$router.push('/admin')
-                       
+
 
                    }
 

@@ -28,46 +28,49 @@
 
             </a-modal>
 
-            <a-modal v-model="productModalVisible" title="Add Product Category" on-ok="submitCategory">
+            <a-modal v-model="productModalVisible" title="Add Product" on-ok="submitCategory">
                 <template slot="footer">
-                    <a-button key="back" @click="handleCancel">
+                    <a-button key="back" @click="hideProductModal">
                         Return
                     </a-button>
-                    <a-button key="submit" type="primary" :loading="loading" @click="submitCategory">
+                    <a-button key="submit" type="primary" :loading="loading" @click="submitProduct" >
                         Submit
                     </a-button>
                 </template>
                 <p>
                     <a-form-model :label-col="labelCol" :wrapper-col="wrapperCol">
                         <a-form-model-item label="Name">
-                            <a-input  />
+                            <a-input v-model="productData.name" />
                         </a-form-model-item>
                         <a-form-model-item label="Category">
-                            <a-select placeholder="--please select--" >
-                                    <a-select-option  v-for="productCategory in productCategories" :value="productCategory" :key="productCategory.id">
+                            <a-select placeholder="--please select--" v-model="productData.category" >
+                                    <a-select-option  v-for="productCategory in productCategories" :value="productCategory.name" :key="productCategory.name">
                                         {{productCategory.name}}
                                      </a-select-option>
                             </a-select>
                         </a-form-model-item>
                         <a-form-model-item label="Quantity">
-                           <a-input/>
+                           <a-input v-model="productData.quantity"/>
                         </a-form-model-item>
                         <a-form-model-item label="Threshold">
-                           <a-input/>
+                           <a-input v-model="productData.threshold"/>
                         </a-form-model-item>
                         <a-form-model-item label="Available">
-                            <a-select placeholder="--please select--">
-                                <a-select-option value="True">
-                                    true
+                            <a-select placeholder="--please select--" v-model="productData.available">
+                                <a-select-option value=true>
+                                    True
                                 </a-select-option>
-                                <a-select-option value="False">
-                                    false
+                                <a-select-option value=false>
+                                    False
                                 </a-select-option>
                             </a-select>
                         </a-form-model-item>
 
                         <a-form-model-item label="Price/unit">
-                            <a-input/>
+                            <a-input v-model="productData.price"/>
+                        </a-form-model-item>
+                        <a-form-model-item label="Description">
+                            <a-textarea v-model="productData.description"/>
                         </a-form-model-item>
                     </a-form-model>
                 </p>
@@ -124,19 +127,31 @@ import {BASE_API_URL} from '../constants/appConstants'
     ];
 
 export default {
+
     name:'Products',
     data() {
+
         const category = {
             name:'',
             description:''
         }
         let productCategories = []
 
+        const productData={
+            name:'',
+            category:'',
+            threshold:0.0,
+            available:'',
+            quantity:0.0,
+            price:0.0,
+            description:''
+        }
         return {
             data,
             columns,
             loading: false,
             visible: false,
+            productData,
             productModalVisible:false,
             category,
             labelCol: { span: 4 },
@@ -146,6 +161,7 @@ export default {
     },
 
     methods: {
+
         showModal() {
             this.visible = true;
         },
@@ -154,11 +170,11 @@ export default {
             this.productModalVisible = true;
         },
         async submitCategory(e) {
+            const admin = JSON.parse(localStorage.getItem('admin'));
+
             e.preventDefault();
 
             this.loading=true;
-            const admin = JSON.parse(localStorage.getItem('admin'));
-            const token = admin.token;
 
             const categoryData = {
                 name:this.category.name,
@@ -168,7 +184,7 @@ export default {
                 url:BASE_API_URL+'/product-categories',
                 method:'POST',
                 headers:{
-                    Authorization:`Bearer ${token}`,
+                    Authorization:`Bearer ${admin.token}`,
                     'Content-Type':'application/json'
                 },
                 data:JSON.stringify(categoryData)
@@ -186,6 +202,49 @@ export default {
             this.visible = false;
 
         },
+
+        hideProductModal(){
+            this.productModalVisible=false
+        },
+
+        async submitProduct(){
+            const admin = JSON.parse(localStorage.getItem('admin'));
+
+
+            let productAvailable = this.productData.available==='True' ? true:false
+
+            let collectData;
+            try{
+                collectData ={
+                    name:this.productData.name,
+                    threshold: parseFloat(this.productData.threshold),
+                    quantity: parseFloat(this.productData.quantity),
+                    price_per_unit:parseFloat(this.productData.price),
+                    available: productAvailable,
+                    description:this.productData.description
+                }
+
+                await Axios({
+                    url:BASE_API_URL+`/products/${this.productData.category}`,
+                    method:'POST',
+                    headers:{
+                        Authorization: `Bearer ${admin.token}`,
+                        'Content-Type':'application/json'
+                    },
+                    data:JSON.stringify(collectData)
+                }).then(res=>{
+                    if(res.data.status==='ok'){
+                      this.productData.length = 0
+                    }
+                }).catch(err=>{
+                    console.log(err)
+                })
+            }catch (err){
+
+            }
+
+
+        }
     },
 
     async mounted() {

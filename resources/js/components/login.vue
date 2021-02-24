@@ -69,6 +69,7 @@ export default{
 
                        localStorage.setItem('admin', JSON.stringify(res.data))
                        this.$router.push('/admin')
+                       
 
                    }
 

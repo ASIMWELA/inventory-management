@@ -2,7 +2,7 @@
     <a-layout id="components-layout-demo-side" style="min-height: 100vh">
         <a-layout-sider v-model="collapsed" collapsible>
             <div class="logo" />
-            <a-menu theme="dark" :default-selected-keys="['1']" mode="inline" @click="selectedItem">
+            <a-menu theme="dark" :default-selected-keys="['Products']" mode="inline" @click="selectedItem">
                 <a-menu-item key="Products">
                     <a-icon type="stock" />
                     <span>Products</span>
@@ -32,15 +32,32 @@
             </a-menu>
         </a-layout-sider>
         <a-layout>
-            <a-layout-header style="background: #002140; padding: 0" >
-            </a-layout-header>
+            <a-page-header style="background: #002140; padding: 0; color:#fff" >
+
+                <template slot="extra">
+                    <a-button key="3">
+                        Operation
+                    </a-button>
+                    <a-button key="2">
+                        Operation
+                    </a-button>
+                    <a-button key="1" type="primary">
+                        Primary
+                    </a-button>
+                </template>
+
+            </a-page-header>
             <a-layout-content style="margin: 0 16px">
-                <a-breadcrumb style="margin: 16px 0" >
+                <a-breadcrumb style="margin: 16px 0" :routes="routes">
                     <a-breadcrumb-item>Admin</a-breadcrumb-item>
                     <a-breadcrumb-item>{{optionSelected}}</a-breadcrumb-item>
-                </a-breadcrumb>
+
+                   </a-breadcrumb>
+
                 <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
-                    Bill is a cat.
+                    <span v-if="optionSelected==='Products'"><Products/></span>
+                    <span v-if="optionSelected==='Users'"><UsersList/></span>
+                    <span v-if="optionSelected==='Orders'"><Orders/></span>
                 </div>
             </a-layout-content>
             <a-layout-footer style="text-align: center">
@@ -50,14 +67,23 @@
     </a-layout>
 </template>
 <script>
+import Products from './Products'
+import Orders  from "./Orders";
+import UsersList from "./UsersList";
+
 export default {
     data() {
         return {
             collapsed: false,
-            optionSelected:'Products'
+            optionSelected:'Products',
+            basePath:'/admin'
         };
     },
-
+components:{
+        Products,
+        Orders,
+    UsersList
+},
     methods:{
         logout(){
             if(localStorage.admin){
@@ -67,6 +93,7 @@ export default {
        },
         selectedItem( item, key, keyPath){
             this.optionSelected = item.key
+            console.log(this.$route)
         }
     },
 

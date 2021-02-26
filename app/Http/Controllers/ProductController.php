@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\product;
 use App\Models\ProductCategory;
-use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use function PHPUnit\Framework\isEmpty;
+
 
 class ProductController extends Controller
 {
@@ -21,6 +20,12 @@ class ProductController extends Controller
     public function getAllProducts(){
 
         $products = Product::all();
+
+        for($x=0; $x < sizeof($products); $x++){
+            $productCategory = ProductCategory::where('id', '=', $products[$x]->category_id)->get();
+
+            $products[$x]->category = $productCategory;
+        }
 
         return response()->json([
             "products"=>$products

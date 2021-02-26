@@ -6,8 +6,6 @@
 
                  <a-icon type="plus-circle" @click="showProductModal"/>
             </span>
-
-
             <a-modal v-model="visible" title="Add Product Category" on-ok="submitCategory">
                 <template slot="footer">
                     <a-button key="back" @click="handleCancel">
@@ -50,10 +48,10 @@
                             </a-select>
                         </a-form-model-item>
                         <a-form-model-item label="Quantity">
-                           <a-input v-model="productData.quantity"/>
+                           <a-input-number v-model="productData.quantity"/>
                         </a-form-model-item>
                         <a-form-model-item label="Threshold">
-                           <a-input v-model="productData.threshold"/>
+                           <a-input-number v-model="productData.threshold"/>
                         </a-form-model-item>
                         <a-form-model-item label="Available">
                             <a-select placeholder="--please select--" v-model="productData.available">
@@ -80,7 +78,7 @@
 
 
 
-        <a-table :columns="columns" :data-source="data">
+        <a-table :columns="columns" :data-source="data" rowKey="id">
         <a slot="action" slot-scope="text" href="javascript:;">Delete</a>
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
             {{ record.description }}
@@ -97,40 +95,17 @@ import {BASE_API_URL} from '../constants/appConstants'
 
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Age', dataIndex: 'age', key: 'age' },
-        { title: 'Address', dataIndex: 'address', key: 'address' },
-        { title: 'Action', dataIndex: '', key: 'x', scopedSlots: { customRender: 'action' } },
+        { title: 'Quantity', dataIndex: 'quantity', key: 'quantity' },
+        { title: 'Category', dataIndex: 'category', key: 'category' },
+        { title: 'Price', dataIndex: 'price_per_unit', key: 'price'},
     ];
 
-    const data = [
-        {
-            key: 1,
-            name: 'John Brown',
-            age: 32,
-            address: 'New York No. 1 Lake Park',
-            description: 'My name is John Brown, I am 32 years old, living in New York No. 1 Lake Park.',
-        },
-        {
-            key: 2,
-            name: 'Jim Green',
-            age: 42,
-            address: 'London No. 1 Lake Park',
-            description: 'My name is Jim Green, I am 42 years old, living in London No. 1 Lake Park.',
-        },
-        {
-            key: 3,
-            name: 'Joe Black',
-            age: 32,
-            address: 'Sidney No. 1 Lake Park',
-            description: 'My name is Joe Black, I am 32 years old, living in Sidney No. 1 Lake Park.',
-        },
-    ];
 
 export default {
-
     name:'Products',
     data() {
 
+        const data = [];
         const category = {
             name:'',
             description:''
@@ -207,11 +182,28 @@ export default {
             this.productModalVisible=false
         },
 
+
+        async refreshProducts(){
+            const categories = await Axios.get(BASE_API_URL+'/product-categories');
+            const products = await Axios.get(BASE_API_URL+'/products');
+
+            const productData= products.data.products.map(product=>{
+
+                const category =  product.category.map(category=>category.name)
+                return {...product, category:category[0]}
+            })
+
+            this.productCategories = categories.data.categories
+
+            this.data = productData
+
+        },
+
         async submitProduct(){
             const admin = JSON.parse(localStorage.getItem('admin'));
 
 
-            let productAvailable = this.productData.available==='True' ? true:false
+            let productAvailable = this.productData.available==='true' ? true:false
 
             let collectData;
             try{
@@ -234,10 +226,23 @@ export default {
                     data:JSON.stringify(collectData)
                 }).then(res=>{
                     if(res.data.status==='ok'){
-                      this.productData.length = 0
+                      this.productData.name =''
+                      this.productData.quantity =''
+                      this.productData.threshold =''
+                      this.productData.description =''
+                      this.productData.available =''
+                      this.productData.price =''
+                      this.productData.category =''
+
+                        this.refreshProducts();
                     }
                 }).catch(err=>{
-                    console.log(err)
+                    if(err.message.includes('401', 0)){
+                        localStorage.removeItem('admin')
+                        this.$router.push('/login')
+                    }else{
+                        console.log(err)
+                    }
                 })
             }catch (err){
 
@@ -248,11 +253,18 @@ export default {
     },
 
     async mounted() {
-       const categories = await Axios.get(BASE_API_URL+'/product-categories')
-       this.productCategories = categories.data.categories
+        const categories = await Axios.get(BASE_API_URL+'/product-categories');
+        const products = await Axios.get(BASE_API_URL+'/products');
 
-        console.log(this.productCategories)
+        const productData= products.data.products.map(product=>{
 
+            const category =  product.category.map(category=>category.name)
+            return {...product, category:category[0]}
+        })
+
+        this.productCategories = categories.data.categories
+
+        this.data = productData
     }
 };
 </script>

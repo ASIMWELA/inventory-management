@@ -11,11 +11,6 @@ class productCategory extends Model
 
     public $timestamps = false;
 
-
-    protected $hidden = [
-      'category_id'
-    ];
-
     public function products(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Product::class);

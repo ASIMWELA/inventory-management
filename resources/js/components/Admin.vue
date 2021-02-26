@@ -32,18 +32,13 @@
             </a-menu>
         </a-layout-sider>
         <a-layout>
-            <a-page-header style="background: #002140; padding: 0; color:#fff" >
+            <a-page-header style="background: #002140; padding: 5px; color:#fff" >
 
                 <template slot="extra">
-                    <a-button key="3">
-                        Operation
-                    </a-button>
-                    <a-button key="2">
-                        Operation
-                    </a-button>
-                    <a-button key="1" type="primary">
-                        Primary
-                    </a-button>
+                   <div>
+                       <a-icon type="user"/>
+                       Admin UserName
+                   </div>
                 </template>
 
             </a-page-header>

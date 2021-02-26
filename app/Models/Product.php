@@ -14,10 +14,6 @@ class product extends Model
         'description'
     ];
 
-    protected $hidden=[
-      'id'
-    ];
-
     public function category(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(ProductCategory::class);

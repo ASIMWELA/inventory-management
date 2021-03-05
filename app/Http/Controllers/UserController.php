@@ -20,6 +20,14 @@ class UserController extends Controller
             'users'=>$users
         ]);
     }
+
+    public function getUser($userName){
+        $user = User::where('userName', '=', $userName)->first();
+
+        return response()->json([
+           "userData"=>$user
+        ]);
+    }
     public function registerUser(UserRequest $user){
 
         $newUser = new User;

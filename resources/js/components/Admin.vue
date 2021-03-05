@@ -37,7 +37,7 @@
                 <template slot="extra">
                    <div>
                        <a-icon type="user"/>
-                       Admin UserName
+                       {{admin.userData.userName}}
                    </div>
                 </template>
 
@@ -68,7 +68,9 @@ import UsersList from "./UsersList";
 
 export default {
     data() {
+        const admin = JSON.parse(localStorage.getItem('admin'))
         return {
+            admin,
             collapsed: false,
             optionSelected:'Products',
             basePath:'/admin'
@@ -88,7 +90,6 @@ components:{
        },
         selectedItem( item, key, keyPath){
             this.optionSelected = item.key
-            console.log(this.$route)
         }
     },
 

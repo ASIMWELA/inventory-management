@@ -19,7 +19,7 @@ class ProductController extends Controller
 
     public function getAllProducts(){
 
-        $products = Product::all();
+        $products = Product::paginate(8);
 
         for($x=0; $x < sizeof($products); $x++){
             $productCategory = ProductCategory::where('id', '=', $products[$x]->category_id)->get();

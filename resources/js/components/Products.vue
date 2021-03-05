@@ -78,13 +78,15 @@
 
 
 
-        <a-table :columns="columns" :data-source="data" rowKey="id">
+        <a-table :columns="columns" :data-source="data" rowKey="id" @change="handleTableChange" :pagination="pagination">
         <a slot="action" slot-scope="text" href="javascript:;">Delete</a>
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
             {{ record.description }}
         </p>
     </a-table>
-
+        <template :style="{float:'right'}">
+            <a-pagination :current="currentPage" :total="50" @change="onChange" />
+        </template>
     </div>
 
 </template>
@@ -129,6 +131,8 @@ export default {
             productData,
             productModalVisible:false,
             category,
+            currentPage:1,
+            pagination:{},
             labelCol: { span: 4 },
             wrapperCol: { span: 14 },
             productCategories
@@ -139,6 +143,21 @@ export default {
 
         showModal() {
             this.visible = true;
+        },
+
+        handleTableChange(pagination) {
+            console.log(pagination);
+            const pager = { ...this.pagination };
+            pager.current = pagination.current;
+            this.pagination = pager;
+            this.fetch({
+                results: pagination.pageSize,
+                page: pagination.current,
+            });
+        },
+
+        onChange(current){
+            this.currentPage = current
         },
 
         showProductModal() {
@@ -187,7 +206,8 @@ export default {
             const categories = await Axios.get(BASE_API_URL+'/product-categories');
             const products = await Axios.get(BASE_API_URL+'/products');
 
-            const productData= products.data.products.map(product=>{
+                console.log(products)
+            const productData= products.data.products.data.map(product=>{
 
                 const category =  product.category.map(category=>category.name)
                 return {...product, category:category[0]}
@@ -198,6 +218,8 @@ export default {
             this.data = productData
 
         },
+
+
 
         async submitProduct(){
             const admin = JSON.parse(localStorage.getItem('admin'));
@@ -252,19 +274,10 @@ export default {
         }
     },
 
+
+
     async mounted() {
-        const categories = await Axios.get(BASE_API_URL+'/product-categories');
-        const products = await Axios.get(BASE_API_URL+'/products');
-
-        const productData= products.data.products.map(product=>{
-
-            const category =  product.category.map(category=>category.name)
-            return {...product, category:category[0]}
-        })
-
-        this.productCategories = categories.data.categories
-
-        this.data = productData
+       await this.refreshProducts();
     }
 };
 </script>

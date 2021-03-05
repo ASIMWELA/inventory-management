@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserController;
@@ -25,6 +26,16 @@ Route::prefix('product-categories')->middleware(['auth:api', 'can:accessAdmin'])
     Route::delete('/{id}', [ProductCategoryController::class, 'deleteProductCategory']);
 });
 
+Route::prefix('orders')->group(function(){
+    Route::post('/{productId}', [OrderController::class, 'addToCart']);
+    Route::put('/checkout', [OrderController::class, 'checkoutOrder']);
+    Route::put('/', [OrderController::class, 'resetCartPrice']);
+    Route::get('/complete/{userName}', [OrderController::class, 'getCompletedOrderByUserName']);
+    Route::get('/complete', [OrderController::class, 'getCompletedOrders']);
+    Route::put('/{orderId}', [OrderController::class, 'confirmOrder'])->middleware(['auth:api', 'can:accessAdmin']);
+    Route::get('/', [OrderController::class, 'getOrders'])->middleware(['auth:api', 'can:accessAdmin']);
+
+});
 //open routes
 Route::prefix('product-categories')->group(function (){
     Route::get('/', [ProductCategoryController::class, 'getAllProductCategories']);

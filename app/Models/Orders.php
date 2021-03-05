@@ -19,4 +19,8 @@ class Orders extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    public function cart(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Cart::class);
+    }
 }

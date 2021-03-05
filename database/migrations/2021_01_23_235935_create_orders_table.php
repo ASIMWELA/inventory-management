@@ -19,6 +19,7 @@ class CreateOrdersTable extends Migration
             $table->integer('user_id');
             $table->integer('product_id');
             $table->date('orderDate');
+            $table->text('details');
             $table->string('status');
             $table->float('subtotal');
             $table->foreign('user_id')->references('id')->on('users');

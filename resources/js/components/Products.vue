@@ -81,7 +81,11 @@
         <a-table :columns="columns" :data-source="data" rowKey="id" @change="handleTableChange" :pagination="pagination">
         <a slot="action" slot-scope="text" href="javascript:;">Delete</a>
         <p slot="expandedRowRender" slot-scope="record" style="margin: 0">
-            {{ record.description }}
+           Product Description:  <strong>{{ record.description }}</strong>
+          <span >
+              <ProductChart :chart-data="record.chartData" :style="{position: 'relative', marginLeft:'35%', minHeight:'9vh', minWidth:'10vw', maxWidth:'20vw'}"/>
+          </span>
+
         </p>
     </a-table>
         <template :style="{float:'right'}">
@@ -94,6 +98,7 @@
 
 import Axios from 'axios';
 import {BASE_API_URL} from '../constants/appConstants'
+import ProductChart from "./ProductChart";
 
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
@@ -105,6 +110,7 @@ import {BASE_API_URL} from '../constants/appConstants'
 
 export default {
     name:'Products',
+    components:{ProductChart},
     data() {
 
         const data = [];
@@ -135,9 +141,25 @@ export default {
             pagination:{},
             labelCol: { span: 4 },
             wrapperCol: { span: 14 },
-            productCategories
+            productCategories,
+            chartData: {
+                labels: ['January', 'February', 'March'],
+                datasets: [
+                    {
+                        label: 'Data One',
+                        backgroundColor: '#002140',
+                        data: [40, 25, 40]
+                    }
+
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
         };
     },
+
 
     methods: {
 
@@ -209,13 +231,27 @@ export default {
                 console.log(products)
             const productData= products.data.products.data.map(product=>{
 
+                let chartData = {
+                    labels: ['Price', 'Quantity', 'Threshold'],
+                    datasets: [
+                        {
+                            label: 'Product Vitals',
+                            backgroundColor: '#002140',
+                            data: [parseFloat(product.price_per_unit), product.quantity, product.threshold]
+                        }
+
+                    ]
+                }
                 const category =  product.category.map(category=>category.name)
-                return {...product, category:category[0]}
+                return {...product, category:category[0], chartData}
             })
 
             this.productCategories = categories.data.categories
 
+
             this.data = productData
+
+            console.log(productData)
 
         },
 

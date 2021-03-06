@@ -48,6 +48,7 @@
 <script>
     import Axios from 'axios'
     import {BASE_API_URL} from '../constants/appConstants'
+    const key = 'completeOrder'
     export default {
         name:'Orders',
         data:()=>{
@@ -119,12 +120,14 @@
                     }
             },
             async confirmOrder(orderId){
+                this.$message.loading({ content: 'Please Wait.. Completing The Order', key });
               await Axios.put(BASE_API_URL + `/orders/${orderId}`, {}, {
                     headers:{
                         Authorization:`Bearer ${this.admin.token}`
                     }
                 }).then(async res=>{
                     if(res.data.status==='ok'){
+                        this.$message.success({ content: 'Process Complete...!', key, duration: 2});
                         await this.getPendingOrders()
                     }
               }).catch(err=>{

@@ -9,8 +9,11 @@
                 :style="{ lineHeight: '64px', marginLeft:'30%' }"
             >
 
+
                 <a-menu-item key="4" :style="{marginLeft:'25%'}" v-if="cartPrice > 0" @click="checkOut">
-                    <span><a-icon type="shopping-cart" />K {{cartPrice}} . 00</span> Checkout
+                    <a-button type="primary" >
+                        <span><a-icon type="shopping-cart" />K {{cartPrice}} . 00</span> Checkout
+                    </a-button>
                 </a-menu-item>
                 <a-menu-item key="12" :style="{marginLeft:'15%'}">
                     <a-icon type="user"/>{{user.userData.userName}}
@@ -85,11 +88,11 @@
         </a-layout-content>
 
         <template>
-            <a-pagination :current="currentPage" :total="totalPages" @change="onChange" v-if="productList"/>
+            <a-pagination :current="currentPage" :total="totalPages" @change="onChange" v-if="productList" :show-total="total => `Total ${total} items`"/>
         </template>
 
         <template>
-            <a-pagination :current="orderCurrentPage" :total="orderTotalPages" @change="orderPageChange" v-if="orderList"/>
+            <a-pagination :current="orderCurrentPage" :total="orderTotalPages" @change="orderPageChange" v-if="orderList" :show-total="total => `Total ${total} items`"/>
         </template>
 
         <a-layout-footer style="text-align: center">
@@ -102,9 +105,8 @@
 <script>
     import {BASE_API_URL} from '../constants/appConstants'
     import Axios from 'axios'
-
+    const key = 'updatable';
     export default {
-
         data: ()=>{
             let products = [];
             let orders= []
@@ -114,11 +116,11 @@
                 products,
                 orders,
                 currentPage:0,
+                totalPages:5,
                 orderCurrentPage:0,
                 orderTotalPages:1,
                 loading:false,
-                cartPrice:1,
-                totalPages:1,
+                cartPrice:0.0,
                 productList:false,
                 orderList:false
             }
@@ -162,8 +164,9 @@
                this.productList = true
                 this.orderList = false
                 await Axios.get(BASE_API_URL+'/products').then(res=>{
-                    this.products = res.data.products.data
-/                   this.totalPages = res.data.products.total
+                     this.products = res.data.products.data
+                     this.totalPages = 50
+
 
                     console.log(res.data)
                 })
@@ -186,12 +189,14 @@
                 })
             },
 
-            onChange(current) {
+           async onChange(current) {
                 this.currentPage = current;
                 console.log(this.currentPage)
-                Axios.get(BASE_API_URL+`/products?page=${this.currentPage}`).then(res=>{
+            await Axios.get(BASE_API_URL+`/products?page=${this.currentPage}`).then(res=>{
                     this.products = res.data.products.data
-                    this.totalPages = res.data.products.total
+                    this.totalPages = 50
+
+                    console.log(res)
                 })
 
             },
@@ -212,12 +217,17 @@
                })
             },
             checkOut(){
+                this.$message.loading({ content: 'Please Wait.. Loading...', key });
                Axios.put(BASE_API_URL+'/orders/checkout',{}, {headers:{
                    Authorization:'Bearer '+this.user.token
                    }}).then(res=>{
-                       console.log(res.data)
+                       this.$message.success({ content: 'Checkout Successs...!', key, duration: 2});
+                       this.cartPrice = 0
                     }).catch(err=>{
-                        console.log(err)
+                        if(err.message.includes('401')){
+                            localStorage.removeItem('user')
+                            this.$router.push('/login')
+                        }
                })
             }
         },
